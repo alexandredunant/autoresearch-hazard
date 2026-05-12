@@ -32,7 +32,7 @@ FEATURE_RECIPE = {
 }
 
 MODEL_CONFIG = {
-    "interactions": 2,
+    "interactions": 4,
     "max_bins": 128,
     "learning_rate": 0.01,
     "outer_bags": 8,
@@ -46,11 +46,13 @@ PROCESS_WEIGHTS = {
 }
 
 EXPERIMENT_RATIONALE = """
-Baseline joint autoresearch recipe for slides and flows. It keeps static basin
-predictors, process-specific categorical context, seasonality, existing legacy
-rainfall features, and normalized antecedent rainfall windows when CERRA lag
-features are available. EBM interactions start disabled so the first score is a
-stable baseline before testing process interactions.
+Test whether a modest increase in EBM interaction capacity improves the joint
+slide/flow susceptibility model. The current best two-interaction model learned
+rainfall/climatology interaction terms; allowing four interactions should expose
+additional interpretable modifiers from slope, basin morphology, lithology,
+landcover, or seasonality while keeping the same feature recipe, bags, learning
+rate, and process weights. This hypothesis is rejected if validation PR-AUC does
+not exceed the current best score.
 """
 
 # ============================================================
