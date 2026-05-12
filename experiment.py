@@ -10,18 +10,20 @@ writing live elsewhere and should stay stable.
 
 FEATURE_RECIPE = {
     "families": {
-        "static_numeric": False,
-        "seasonality": False,
-        "categorical": False,
-        "legacy_precip": False,
+        "static_numeric": True,
+        "seasonality": True,
+        "categorical": True,
+        "legacy_precip": True,
         "cum": False,
         "max": False,
-        "cum_norm": False,
-        "max_norm": False,
+        "cum_norm": True,
+        "max_norm": True,
         "slope": True,
     },
     "windows": {
-        "slope": [2, 3, 7],
+        "cum_norm": [1, 2, 3, 7, 15, 21, 30, 45, 60],
+        "max_norm": [2, 3, 7, 15, 21, 30, 45, 60],
+        "slope": [2, 3, 4, 5, 6, 7, 15, 30],
     },
     "include_features": [],
     "add_features": [],
@@ -30,10 +32,10 @@ FEATURE_RECIPE = {
 }
 
 MODEL_CONFIG = {
-    "interactions": 0,
-    "max_bins": 32,
-    "learning_rate": 0.02,
-    "outer_bags": 4,
+    "interactions": 2,
+    "max_bins": 128,
+    "learning_rate": 0.01,
+    "outer_bags": 8,
     "validation_size": 0.15,
     "early_stopping_rounds": 25,
 }
@@ -44,7 +46,11 @@ PROCESS_WEIGHTS = {
 }
 
 EXPERIMENT_RATIONALE = """
-Progression baseline: slope-only rainfall intensification EBM with no interactions and minimal bagging. This intentionally starts from a small, interpretable model so later iterations can visibly add antecedent rainfall, static basin context, categorical geology/landcover context, and then interaction capacity only after each simpler stage has been measured.
+Baseline joint autoresearch recipe for slides and flows. It keeps static basin
+predictors, process-specific categorical context, seasonality, existing legacy
+rainfall features, and normalized antecedent rainfall windows when CERRA lag
+features are available. EBM interactions start disabled so the first score is a
+stable baseline before testing process interactions.
 """
 
 # ============================================================
