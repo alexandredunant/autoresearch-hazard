@@ -10,20 +10,18 @@ writing live elsewhere and should stay stable.
 
 FEATURE_RECIPE = {
     "families": {
-        "static_numeric": True,
-        "seasonality": True,
-        "categorical": True,
-        "legacy_precip": True,
-        "cum": True,
-        "max": True,
-        "cum_norm": True,
-        "max_norm": True,
+        "static_numeric": False,
+        "seasonality": False,
+        "categorical": False,
+        "legacy_precip": False,
+        "cum": False,
+        "max": False,
+        "cum_norm": False,
+        "max_norm": False,
         "slope": True,
     },
     "windows": {
-        "cum_norm": [1, 2, 3, 7, 15, 21, 30, 45, 60],
-        "max_norm": [2, 3, 7, 15, 21, 30, 45, 60],
-        "slope": [2, 3, 4, 5, 6, 7, 15, 30],
+        "slope": [2, 3, 7],
     },
     "include_features": [],
     "add_features": [],
@@ -32,10 +30,10 @@ FEATURE_RECIPE = {
 }
 
 MODEL_CONFIG = {
-    "interactions": 1,
-    "max_bins": 128,
-    "learning_rate": 0.01,
-    "outer_bags": 8,
+    "interactions": 0,
+    "max_bins": 32,
+    "learning_rate": 0.02,
+    "outer_bags": 4,
     "validation_size": 0.15,
     "early_stopping_rounds": 25,
 }
@@ -46,7 +44,7 @@ PROCESS_WEIGHTS = {
 }
 
 EXPERIMENT_RATIONALE = """
-Testing EBM interactions=3 to capture non-linear feature dependencies. Builds on baseline recipe that keeps static basin predictors, process-specific categorical context, seasonality, existing legacy rainfall features, and normalized antecedent rainfall windows when CERRA lag features are available. Testing whether low-order interactions improve joint slides/flows susceptibility prediction.
+Progression baseline: slope-only rainfall intensification EBM with no interactions and minimal bagging. This intentionally starts from a small, interpretable model so later iterations can visibly add antecedent rainfall, static basin context, categorical geology/landcover context, and then interaction capacity only after each simpler stage has been measured.
 """
 
 # ============================================================

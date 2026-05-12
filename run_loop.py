@@ -147,12 +147,12 @@ def run_train(args) -> dict:
     ]
     if args.with_audit:
         cmd.append("--with-audit")
-    result = run(cmd, capture=True)
+    result = subprocess.run(cmd, check=True, text=True, stdout=subprocess.PIPE)
     for line in reversed(result.stdout.splitlines()):
         line = line.strip()
         if line.startswith("{"):
             return json.loads(line)
-    raise RuntimeError(f"train.py did not emit JSON. stdout:\n{result.stdout}\nstderr:\n{result.stderr}")
+    raise RuntimeError(f"train.py did not emit JSON. stdout:\n{result.stdout}")
 
 
 def commit_accept(iteration: int, score: float) -> str:

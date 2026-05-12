@@ -69,8 +69,14 @@ explicit score/model updates described below.
 5. Run the deterministic evaluator:
 
    ```bash
-   python train.py --process slides,flows --features artifacts/features --out artifacts/run_current
+   python -u train.py --process slides,flows --features artifacts/features --out artifacts/run_current
    ```
+
+   Training can take a long time. Let it run until the final `val_pr_auc` line
+   appears. If your command runner reports a timeout or loses patience while
+   `train.py` is still active, do not simplify the model, reduce features, or
+   mark the experiment failed. Re-run the same command with a longer/no timeout
+   and wait for completion.
 
    The last stdout line is:
 
@@ -175,8 +181,10 @@ The primary keep/discard metric is random-split `val_pr_auc`. Occasionally run
 the slower audit command to check robustness:
 
 ```bash
-python train.py --process slides,flows --features artifacts/features --out artifacts/run_current --with-audit
+python -u train.py --process slides,flows --features artifacts/features --out artifacts/run_current --with-audit
 ```
 
 Spatial and temporal audit metrics are diagnostic. Do not use them as the
 primary keep/discard decision unless the human explicitly changes the protocol.
+Audit runs perform extra fits and may be much slower; do not back off solely
+because an audit run takes longer than the primary evaluator.
