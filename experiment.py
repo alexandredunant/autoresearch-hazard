@@ -14,8 +14,8 @@ FEATURE_RECIPE = {
         "seasonality": True,
         "categorical": True,
         "legacy_precip": True,
-        "cum": False,
-        "max": False,
+        "cum": True,
+        "max": True,
         "cum_norm": True,
         "max_norm": True,
         "slope": True,
@@ -32,7 +32,7 @@ FEATURE_RECIPE = {
 }
 
 MODEL_CONFIG = {
-    "interactions": 0,
+    "interactions": 1,
     "max_bins": 128,
     "learning_rate": 0.01,
     "outer_bags": 8,
@@ -46,11 +46,7 @@ PROCESS_WEIGHTS = {
 }
 
 EXPERIMENT_RATIONALE = """
-Baseline joint autoresearch recipe for slides and flows. It keeps static basin
-predictors, process-specific categorical context, seasonality, existing legacy
-rainfall features, and normalized antecedent rainfall windows when CERRA lag
-features are available. EBM interactions start disabled so the first score is a
-stable baseline before testing process interactions.
+Testing EBM interactions=3 to capture non-linear feature dependencies. Builds on baseline recipe that keeps static basin predictors, process-specific categorical context, seasonality, existing legacy rainfall features, and normalized antecedent rainfall windows when CERRA lag features are available. Testing whether low-order interactions improve joint slides/flows susceptibility prediction.
 """
 
 # ============================================================
