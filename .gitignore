@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.claude/
+
+# Large local inputs
+data/
+CERRA_LAND_EUSALP_reproj/
+literature/*
+!literature/.gitkeep
+
+# Generated outputs
+output/
+artifacts/*
+!artifacts/.gitkeep
+!artifacts/experiments/
+!artifacts/experiments/.gitkeep
+!artifacts/experiments/experiments.tsv
+!artifacts/experiments/best_score.txt
+
+# Runtime markers and model blobs
+.autoresearch_done
+.autoresearch_v2_done
+.last_ebm_model.pkl
+*.pkl
+*.joblib
+*.log

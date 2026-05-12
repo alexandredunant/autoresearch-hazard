@@ -1,0 +1,50 @@
+project:
+  name: bolzano_mass_movement_autoresearch
+  data_dir: data
+  basins_file: basins_with_BZ.geojson
+  cerra_dir: CERRA_LAND_EUSALP_reproj
+  artifact_dir: artifacts
+  default_processes: [slides, flows]
+  max_lag: 60
+  random_state: 42
+
+processes:
+  slides:
+    display_name: Slide-type
+    event_file: df_slides.geojson
+    label_col: SL01
+    basin_id_col: cat
+    bolzano_col: BZ
+    numeric_features:
+      - SL_Slope
+      - log_B_SL_n
+      - SL_roads_12
+      - tp_su_mean_annual_mean
+      - doy_sin
+      - doy_cos
+    categorical_features:
+      - SL_dominant_landcover
+      - SL_dominant_lithology
+    legacy_precip_features:
+      - tp_2
+      - tp_30
+
+  flows:
+    display_name: Flow-type
+    event_file: df_flows.geojson
+    label_col: DF01
+    basin_id_col: cat
+    bolzano_col: BZ
+    numeric_features:
+      - DF_Slope
+      - DF_CI_mean
+      - log_B_DF_n
+      - tp_su_mean_annual_mean
+      - doy_sin
+      - doy_cos
+    categorical_features:
+      - DF_dominant_landcover
+      - DF_dominant_lithology
+    legacy_precip_features:
+      - tp_2
+      - tp_21

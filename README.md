@@ -1,4 +1,4 @@
-# Bolzano Mass-Movement Autoresearch
+# Hazard Autoresearch
 
 This repository contains a Karpathy-autoresearch-style workflow for basin-level
 mass-movement susceptibility in Bolzano. The first supported processes are
