@@ -32,7 +32,7 @@ FEATURE_RECIPE = {
 }
 
 MODEL_CONFIG = {
-    "interactions": 8,
+    "interactions": 16,
     "max_bins": 128,
     "learning_rate": 0.01,
     "outer_bags": 8,
@@ -46,13 +46,12 @@ PROCESS_WEIGHTS = {
 }
 
 EXPERIMENT_RATIONALE = """
-Test whether a larger but still interpretable EBM interaction budget improves
-joint slide/flow susceptibility after the four-interaction model exposed useful
-terrain/rainfall and rainfall-window modifiers. Allowing eight interactions
-should give the model room to represent additional slope, basin morphology,
-lithology, landcover, or seasonal modifiers without changing the feature recipe,
-learning rate, bags, or process weights. This hypothesis is rejected if
-validation PR-AUC does not exceed the current best score.
+Test whether the recent gains from EBM interaction capacity continue or plateau
+when the budget is expanded from eight to sixteen terms. Because the current
+best model now uses multiple terrain/rainfall, basin-morphology/rainfall, and
+seasonal/rainfall interactions, a larger budget may capture weaker lithology or
+landcover modifiers; if those added terms mostly fit noise, validation PR-AUC
+will fail to exceed the current best score.
 """
 
 # ============================================================
