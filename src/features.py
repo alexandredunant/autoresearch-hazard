@@ -12,6 +12,7 @@ from src.config import ProcessSpec
 
 
 DYNAMIC_FAMILIES = ("cum", "max", "cum_norm", "max_norm", "slope")
+NULL_FEATURE_NAME = "__null_feature__"
 
 
 def safe_token(value: object) -> str:
@@ -163,6 +164,8 @@ def load_artifact(process_dir: Path) -> tuple[np.ndarray, np.ndarray, pd.DataFra
 
 
 def feature_family(name: str) -> str:
+    if name == NULL_FEATURE_NAME:
+        return "null"
     if name in ("doy_sin", "doy_cos"):
         return "seasonality"
     if name.startswith("cat__"):
@@ -207,16 +210,24 @@ def select_feature_names(feature_names: list[str], recipe: dict[str, Any]) -> li
         if name not in excludes and feature_family(name) not in exclude_families
     ]
     if not selected:
+        if recipe.get("allow_no_features", False) or recipe.get("null_baseline", False):
+            return [NULL_FEATURE_NAME]
         raise ValueError("Feature recipe selected zero available features")
     return selected
 
 
 def selected_matrix(X: np.ndarray, feature_names: list[str], selected: list[str]) -> np.ndarray:
     index = {name: i for i, name in enumerate(feature_names)}
-    missing = [name for name in selected if name not in index]
+    missing = [name for name in selected if name != NULL_FEATURE_NAME and name not in index]
     if missing:
         raise KeyError(f"Selected features not present in matrix: {missing[:10]}")
-    return X[:, [index[name] for name in selected]].astype(np.float32)
+    columns = []
+    for name in selected:
+        if name == NULL_FEATURE_NAME:
+            columns.append(np.zeros((X.shape[0], 1), dtype=np.float32))
+        else:
+            columns.append(X[:, [index[name]]].astype(np.float32))
+    return np.hstack(columns).astype(np.float32)
 
 
 def build_prediction_frame(
@@ -258,6 +269,8 @@ def build_prediction_frame(
             data[name] = (values == level).astype(np.float32).to_numpy()
 
     pred = pd.DataFrame(data)
+    if NULL_FEATURE_NAME in selected_features:
+        pred[NULL_FEATURE_NAME] = np.zeros(len(frame), dtype=np.float32)
     missing = [name for name in selected_features if name not in pred.columns]
     if missing:
         needs_lags = [name for name in missing if feature_family(name) in set(DYNAMIC_FAMILIES) | {"legacy_precip"}]

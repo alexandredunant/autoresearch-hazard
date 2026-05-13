@@ -10,29 +10,30 @@ writing live elsewhere and should stay stable.
 
 FEATURE_RECIPE = {
     "families": {
-        "static_numeric": True,
-        "seasonality": True,
-        "categorical": True,
-        "legacy_precip": True,
+        "static_numeric": False,
+        "seasonality": False,
+        "categorical": False,
+        "legacy_precip": False,
         "cum": False,
         "max": False,
-        "cum_norm": True,
-        "max_norm": True,
-        "slope": True,
+        "cum_norm": False,
+        "max_norm": False,
+        "slope": False,
     },
     "windows": {
-        "cum_norm": [1, 2, 3, 7, 15, 21, 30, 45, 60],
-        "max_norm": [2, 3, 7, 15, 21, 30, 45, 60],
-        "slope": [2, 3, 4, 5, 6, 7, 15, 30],
+        "cum_norm": [],
+        "max_norm": [],
+        "slope": [],
     },
     "include_features": [],
     "add_features": [],
     "exclude_features": [],
     "exclude_families": [],
+    "allow_no_features": True,
 }
 
 MODEL_CONFIG = {
-    "interactions": 16,
+    "interactions": 0,
     "max_bins": 128,
     "learning_rate": 0.01,
     "outer_bags": 8,
@@ -46,12 +47,10 @@ PROCESS_WEIGHTS = {
 }
 
 EXPERIMENT_RATIONALE = """
-Test whether the recent gains from EBM interaction capacity continue or plateau
-when the budget is expanded from eight to sixteen terms. Because the current
-best model now uses multiple terrain/rainfall, basin-morphology/rainfall, and
-seasonal/rainfall interactions, a larger budget may capture weaker lithology or
-landcover modifiers; if those added terms mostly fit noise, validation PR-AUC
-will fail to exceed the current best score.
+Fresh-run null baseline. All predictive feature families are disabled and the
+feature selector is explicitly allowed to provide only the constant null feature.
+This establishes the no-feature reference score before any hazard-informed
+feature engineering or model tuning is attempted.
 """
 
 # ============================================================
