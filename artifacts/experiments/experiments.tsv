@@ -1,1 +1,2 @@
 iteration	commit	val_pr_auc	delta	status	process_scores	description
+1	0000000	0.258045	0.000000	keep	a=0.279478,b=0.228993	Fresh-run null baseline. All predictive feature families are disabled and the feature selector is explicitly allowed to provide only the constant null feature.
