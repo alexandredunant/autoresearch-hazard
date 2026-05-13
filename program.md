@@ -20,7 +20,18 @@ To set up a new run, work with the user to:
    fresh run.
 2. **Create the branch**: create `autoresearch/<tag>` from the current main
    development branch.
-3. **Read the in-scope files**: the repo is small. Read these files for full
+3. **Clear prior generated state**: a fresh run must not reuse old discovery,
+   search, model, map, smoke, or run outputs. Remove stale generated artifacts
+   before building any new context:
+
+   ```bash
+   rm -rf artifacts/discovery artifacts/rag artifacts/geoevolve_storage artifacts/maps artifacts/reports artifacts/run_current artifacts/run_smoke artifacts/run_smoke_check artifacts/features_smoke artifacts/models run.log
+   mkdir -p artifacts/models artifacts/experiments
+   ```
+
+   Keep reusable input data such as `artifacts/features/` and `literature/`.
+   Do not read stale files from removed artifact directories as evidence.
+4. **Read the in-scope files**: the repo is small. Read these files for full
    context:
    - `README.md` for repository context and the active train command.
    - `prepare.py` for fixed preparation and data assumptions. Do not modify.
@@ -29,7 +40,46 @@ To set up a new run, work with the user to:
    - `experiment.py` for the editable experiment surface.
    - `configs/` and `src/` as needed to understand available processes,
      features, and model constraints.
-4. **Understand the hazard from literature**: inspect `literature/`, then build
+5. **Inventory prepared data and features**: before proposing any experiment,
+   identify what data is available and where it is stored. This is an inventory
+   step, not a hypothesis source by itself.
+
+   - `configs/processes.yml` defines the configured process keys, source data
+     file names, label columns, and configured feature lists.
+   - `artifacts/features/summary.csv` summarizes the prepared feature artifacts.
+   - `artifacts/features/<process>/matrix.npz` stores the prepared matrix,
+     labels, and feature-name array for each process.
+   - `artifacts/features/<process>/metadata.csv` stores row metadata used by
+     the evaluator and audits.
+   - `artifacts/features/<process>/schema.json` stores the prepared schema,
+     including available numeric, categorical, legacy, and lag-derived feature
+     inventories.
+   - `src/features.py` defines how `FEATURE_RECIPE` selects from those available
+     feature names.
+
+   Useful neutral inventory commands:
+
+   ```bash
+   sed -n '1,220p' configs/processes.yml
+   find artifacts/features -maxdepth 2 -type f | sort
+   cat artifacts/features/summary.csv
+   cat artifacts/features/<process>/schema.json
+   sed -n '1,5p' artifacts/features/<process>/metadata.csv
+   python - <<'PY'
+   import numpy as np
+   from pathlib import Path
+   for path in sorted(Path("artifacts/features").glob("*/matrix.npz")):
+       data = np.load(path, allow_pickle=True)
+       print(path.parent.name, data["X"].shape, data["y"].shape, len(data["feature_names"]))
+       print("  first features:", data["feature_names"][:20].tolist())
+   PY
+   ```
+
+   Do not treat feature names or schema groups as recommendations. Use the
+   inventory only to understand the editable surface and to avoid impossible
+   experiments. The scientific meaning and candidate mechanisms must come from
+   `literature/`, repository context, and measured results.
+6. **Understand the hazard from literature**: inspect `literature/`, then build
    and read discovery context before proposing modeling ideas:
 
    ```bash
@@ -39,10 +89,11 @@ To set up a new run, work with the user to:
 
    Use this to understand the hazard and candidate mechanisms. Do not treat
    `program.md` as the source of hazard-specific hypotheses.
-5. **Verify data exists**: confirm that the feature artifacts required by the
-   train command exist. If they do not, tell the human which `prepare.py`
-   command is needed.
-6. **Initialize the experiment ledger**: create or reset
+7. **Verify data exists**: confirm that every process used by the active train
+   command has `matrix.npz`, `metadata.csv`, and `schema.json` under
+   `artifacts/features/<process>/`. If any required artifact is missing, tell
+   the human which `prepare.py` command is needed.
+8. **Initialize the experiment ledger**: create or reset
    `artifacts/experiments/experiments.tsv` for the fresh run with a header row:
 
    ```text
@@ -51,12 +102,12 @@ To set up a new run, work with the user to:
 
    Initialize `artifacts/experiments/best_score.txt` only after the first
    baseline run.
-7. **First run is the null baseline**: the first experiment must use no
+9. **First run is the null baseline**: the first experiment must use no
    predictive features. Configure `experiment.py` for a no-feature/null baseline
    before any feature engineering or model tuning. In this repo that means all
    feature families are disabled and `FEATURE_RECIPE["allow_no_features"]` is
    set to `True`, which gives the evaluator only a constant null feature.
-8. **Confirm and go**: after setup is confirmed, begin the autonomous loop.
+10. **Confirm and go**: after setup is confirmed, begin the autonomous loop.
 
 ## Experimentation
 

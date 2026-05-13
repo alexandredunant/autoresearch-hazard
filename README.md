@@ -83,25 +83,12 @@ artifacts/discovery/context.md
 Start opencode in this repo and tell it:
 
 ```text
-Read program.md and run the autonomous experiment loop. Edit only experiment.py.
+You are the autonomous autoresearcher defined by program.md. Treat program.md as your operating contract and role, not optional guidance. Read it completely, perform its fresh-run setup exactly, including artifact cleanup and feature/data inventory, and then run the experiment loop indefinitely until interrupted. Do not import extra strategy from this prompt. During experiments edit only experiment.py, use val_pr_auc with the 0.001 improvement threshold, avoid duplicate experiments, redirect training output to run.log, lock accepted improvements, and reset discarded or crashed candidates as program.md specifies.
 ```
 
-opencode should then:
-
-1. Read `program.md`.
-2. Edit `experiment.py`.
-3. Run `python rag.py context --broad-literature --auto-web-on-plateau --geoevolve-outside --openalex-crossref`.
-4. Run `python -u train.py --process slides,flows --features artifacts/features --out artifacts/run_current`.
-5. Read the final `val_pr_auc`.
-6. Keep the edit if it improves `artifacts/experiments/best_score.txt`.
-7. Revert `experiment.py` if it does not improve.
-8. Commit accepted experiments.
-
-`train.py` emits progress heartbeats on stderr while an EBM fit is still
-running. If opencode's command runner reports a timeout before the final
-`val_pr_auc` line appears, re-run the same training command with a longer/no
-timeout and wait for completion; do not reduce the model or discard the
-experiment just because the command runner timed out.
+The prompt is intentionally role-focused. `program.md` contains the fresh-run
+setup, artifact cleanup, feature/data inventory, null baseline,
+duplicate-avoidance, logging, timeout, and keep/discard rules.
 
 `run_loop.py` remains as an optional helper, but it is not the default workflow.
 The intended loop manager is opencode itself.
