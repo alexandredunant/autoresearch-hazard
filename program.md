@@ -15,8 +15,10 @@ an improvement only if it beats the current best score by at least `0.001`.
 
 To set up a new run, work with the user to:
 
-1. **Agree on a run tag**: propose a tag based on today's date, for example
-   `may13`. The branch `autoresearch/<tag>` must not already exist. This is a
+1. **Agree on a run tag**: propose a tag based on today's date *and* the
+   current time, for example `may13-1430` or `20260513-1430`. Including the
+   time avoids collisions with stale branches from earlier runs on the same
+   day. The branch `autoresearch/<tag>` must not already exist. This is a
    fresh run.
 2. **Create the branch**: create `autoresearch/<tag>` from the current main
    development branch.
@@ -197,7 +199,7 @@ acceptable without the exact changed values and mechanism being tested.
 
 ## The Experiment Loop
 
-The experiment runs on a dedicated branch such as `autoresearch/may13`.
+The experiment runs on a dedicated branch such as `autoresearch/may13-1430`.
 
 LOOP FOREVER:
 
